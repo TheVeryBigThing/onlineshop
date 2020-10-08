@@ -9,6 +9,10 @@ import java.util.List;
 public class DefaultProductService implements ProductService {
     private ProductDao productDao;
 
+    public DefaultProductService(ProductDao productDao) {
+        this.productDao = productDao;
+    }
+
     @Override
     public List<Product> getAllProducts() {
         return productDao.getAllProducts();
@@ -27,9 +31,5 @@ public class DefaultProductService implements ProductService {
     @Override
     public void removeProduct(int id) {
         productDao.removeProduct(id);
-    }
-
-    public void setProductDao(ProductDao productDao) {
-        this.productDao = productDao;
     }
 }

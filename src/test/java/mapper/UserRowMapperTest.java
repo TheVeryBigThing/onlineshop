@@ -21,7 +21,8 @@ public class UserRowMapperTest {
         when(mockResultSet.getDouble("price")).thenReturn(150.55);
         when(mockResultSet.getString("expireDate")).thenReturn("1999-05-07");
 
-        Product product = ProductRowMapper.mapRow(mockResultSet);
+        ProductRowMapper rowMapper = new ProductRowMapper();
+        Product product = rowMapper.mapRow(mockResultSet);
 
         assertEquals(123, product.getId());
         assertEquals("John", product.getName());

@@ -24,6 +24,10 @@ public class PageGenerator {
         return pageGenerator;
     }
 
+    public String getPage(String fileName){
+        return getPage(fileName, null);
+    }
+
     public String getPage(String fileName, Map<String, Object> data) {
         try(Writer stream = new StringWriter()) {
 

@@ -17,8 +17,9 @@ public class JdbcProductDao implements ProductDao {
              ResultSet resultSet = statement.executeQuery("SELECT * FROM products;")) {
 
             List<Product> products = new ArrayList<>();
+            ProductRowMapper rowMapper = new ProductRowMapper();
             while (resultSet.next()) {
-                products.add(ProductRowMapper.mapRow(resultSet));
+                products.add(rowMapper.mapRow(resultSet));
             }
 
             return products;

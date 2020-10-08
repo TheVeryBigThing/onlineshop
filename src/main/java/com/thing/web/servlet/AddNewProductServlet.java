@@ -2,6 +2,7 @@ package com.thing.web.servlet;
 
 import com.thing.entity.Product;
 import com.thing.service.ProductService;
+import com.thing.service.impl.SecurityService;
 import com.thing.web.templater.PageGenerator;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Security;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 public class AddNewProductServlet extends HttpServlet {
     private ProductService productService;
+    private SecurityService securityService;
     private List<String> tokens;
 
     public AddNewProductServlet(List<String> tokens) {
@@ -27,21 +30,17 @@ public class AddNewProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         boolean isAuth = false;
 
-        Cookie[] cookies = req.getCookies();
-        for (Cookie cookie : cookies) {
-            if ("product-token".equals(cookie.getName())){
-                if(tokens.contains(cookie.getValue())){
-                    isAuth = true;
-                }
-            }
-        }
-
-        if (isAuth) {
+        if (securityService.containsCoockie(req.getCookies())) {
             PageGenerator pageGenerator = PageGenerator.instance();
-            Map<String, Object> map = new HashMap<>();
-            map.put("action", "add");
-            String page = pageGenerator.getPage("update.html", map);
-            resp.getWriter().write(page);
+
+            if (securityService.isAdmin()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("action", "add");
+                String page = pageGenerator.getPage("update.html", map);
+                resp.getWriter().write(page);
+            } else {
+                resp.sendRedirect("/guest");
+            }
         } else {
             resp.sendRedirect("/login");
         }
@@ -66,5 +65,9 @@ public class AddNewProductServlet extends HttpServlet {
 
     public void setProductService(ProductService productService) {
         this.productService = productService;
+    }
+
+    public void setSecurityService(SecurityService securityService) {
+        this.securityService = securityService;
     }
 }

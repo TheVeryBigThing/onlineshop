@@ -2,7 +2,6 @@ package com.thing.web.servlet;
 
 import com.thing.entity.Product;
 import com.thing.service.ProductService;
-import com.thing.service.impl.SecurityService;
 import com.thing.web.templater.PageGenerator;
 
 import javax.servlet.ServletException;
@@ -14,9 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetAllProductsServlet extends HttpServlet {
+public class GuestServlet extends HttpServlet {
     private ProductService productService;
-    private SecurityService securityService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -25,28 +23,12 @@ public class GetAllProductsServlet extends HttpServlet {
         map.put("products", products);
 
         PageGenerator pageGenerator = PageGenerator.instance();
+        String page = pageGenerator.getPage("guest.html", map);
 
-        if (securityService.containsCoockie(req.getCookies())) {
-
-            if (securityService.isAdmin()) {
-                String page = pageGenerator.getPage("products.html", map);
-                resp.getWriter().write(page);
-
-            } else {
-                resp.sendRedirect("/guest");
-
-            }
-        } else {
-            resp.sendRedirect("/login");
-        }
-
+        resp.getWriter().write(page);
     }
 
     public void setProductService(ProductService productService) {
         this.productService = productService;
-    }
-
-    public void setSecurityService(SecurityService securityService) {
-        this.securityService = securityService;
     }
 }
