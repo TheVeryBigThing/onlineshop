@@ -1,14 +1,12 @@
 package com.thing.web.filter;
 
-import com.thing.service.impl.SecurityService;
-import com.thing.web.templater.PageGenerator;
+import com.thing.service.SecurityService;
 
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AuthFilter implements Filter {
     private SecurityService securityService;
@@ -22,12 +20,23 @@ public class AuthFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
-        if (securityService.containsCoockie(httpServletRequest.getCookies())) {
+        Cookie[] cookies = httpServletRequest.getCookies();
+        if (cookies != null) {
+            String token = null;
+            for (Cookie cookie : cookies) {
+                if ("user-token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
 
-            if (securityService.isAdmin()) {
-                filterChain.doFilter(httpServletRequest, httpServletResponse);
-            } else {
-                httpServletResponse.sendRedirect("/guest");
+            if (token != null && securityService.containsCoockie(token)) {
+
+                if (securityService.isAdmin(token)) {
+                    filterChain.doFilter(httpServletRequest, httpServletResponse);
+                } else {
+                    httpServletResponse.sendRedirect("/guest");
+                }
+
             }
 
         } else {
