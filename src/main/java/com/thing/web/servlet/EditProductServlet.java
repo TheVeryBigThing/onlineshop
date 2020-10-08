@@ -2,7 +2,6 @@ package com.thing.web.servlet;
 
 import com.thing.entity.Product;
 import com.thing.service.ProductService;
-import com.thing.service.impl.SecurityService;
 import com.thing.web.templater.PageGenerator;
 
 import javax.servlet.http.HttpServlet;
@@ -15,28 +14,19 @@ import java.util.Map;
 
 public class EditProductServlet extends HttpServlet {
     private ProductService productService;
-    private SecurityService securityService;
     private int id;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        if (securityService.containsCoockie(req.getCookies())) {
-            if (securityService.isAdmin()){
-                id = Integer.parseInt(req.getParameter("id"));
+        id = Integer.parseInt(req.getParameter("id"));
+        Map<String, Object> map = new HashMap<>();
+        map.put("action", "edit");
 
-                PageGenerator pageGenerator = PageGenerator.instance();
-                Map<String, Object> map = new HashMap<>();
-                map.put("action", "edit");
+        PageGenerator pageGenerator = PageGenerator.instance();
+        String page = pageGenerator.getPage("update.html", map);
 
-                String page = pageGenerator.getPage("update.html", map);
+        resp.getWriter().write(page);
 
-                resp.getWriter().write(page);
-            } else {
-                resp.sendRedirect("/guest");
-            }
-        } else {
-            resp.sendRedirect("/login");
-        }
     }
 
     @Override
@@ -54,9 +44,5 @@ public class EditProductServlet extends HttpServlet {
 
     public void setProductService(ProductService productService) {
         this.productService = productService;
-    }
-
-    public void setSecurityService(SecurityService securityService) {
-        this.securityService = securityService;
     }
 }
