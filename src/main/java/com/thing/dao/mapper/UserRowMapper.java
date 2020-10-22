@@ -11,6 +11,7 @@ public class UserRowMapper {
         User user = new User();
         user.setUserName(resultSet.getString("userName"));
         user.setPassword(resultSet.getString("password"));
+        user.setSole(resultSet.getString("sole"));
         UserType userType = UserType.getByName(resultSet.getString("userType"));
         user.setUserType(userType);
 

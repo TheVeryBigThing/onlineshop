@@ -4,15 +4,20 @@ import com.thing.dao.ProductDao;
 import com.thing.dao.mapper.ProductRowMapper;
 import com.thing.entity.Product;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcProductDao implements ProductDao {
-    private static final String URI = "jdbc:sqlite:src\\main\\resources\\shop.db";
+    private DataSource dataSource;
+
+    public JdbcProductDao(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public List<Product> getAllProducts() {
-        try (Connection connection = DriverManager.getConnection(URI);
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM products;")) {
 
@@ -30,7 +35,7 @@ public class JdbcProductDao implements ProductDao {
 
     public void addNewProduct(Product product) {
         String inserQuery = "INSERT INTO products (name, price, expireDate) VALUES (?, ?, ?)";
-        try (Connection connection = DriverManager.getConnection(URI);
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(inserQuery)) {
             preparedStatement.setString(1, product.getName());
             preparedStatement.setDouble(2, product.getPrice());
@@ -43,7 +48,7 @@ public class JdbcProductDao implements ProductDao {
 
     public void editProduct(Product product) {
         String editQuery = "UPDATE products SET name = ?, price = ?, expireDate = ? WHERE id = ?;";
-        try (Connection connection = DriverManager.getConnection(URI);
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(editQuery)) {
             preparedStatement.setString(1, product.getName());
             preparedStatement.setDouble(2, product.getPrice());
@@ -57,7 +62,7 @@ public class JdbcProductDao implements ProductDao {
 
     public void removeProduct(int id) {
         String removeQuery = "DELETE FROM products WHERE id = ?;";
-        try (Connection connection = DriverManager.getConnection(URI);
+        try (Connection connection = dataSource.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(removeQuery)) {
             preparedStatement.setInt(1, id);
             preparedStatement.execute();

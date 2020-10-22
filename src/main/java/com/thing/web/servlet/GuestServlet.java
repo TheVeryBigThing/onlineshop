@@ -25,6 +25,8 @@ public class GuestServlet extends HttpServlet {
         PageGenerator pageGenerator = PageGenerator.instance();
         String page = pageGenerator.getPage("guest.html", map);
 
+        resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().write(page);
     }
 

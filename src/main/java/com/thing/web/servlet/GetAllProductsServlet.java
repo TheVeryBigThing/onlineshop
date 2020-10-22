@@ -24,6 +24,8 @@ public class GetAllProductsServlet extends HttpServlet {
         PageGenerator pageGenerator = PageGenerator.instance();
         String page = pageGenerator.getPage("products.html", map);
 
+        resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().write(page);
 
     }

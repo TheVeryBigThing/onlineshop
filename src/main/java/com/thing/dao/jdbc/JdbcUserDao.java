@@ -4,15 +4,20 @@ import com.thing.dao.UserDao;
 import com.thing.dao.mapper.UserRowMapper;
 import com.thing.entity.User;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 public class JdbcUserDao implements UserDao {
-    private static final String URI = "jdbc:sqlite:src\\main\\resources\\shop.db";
+    private DataSource dataSource;
+
+    public JdbcUserDao(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     public User getById(int id) {
 
-        try (Connection connection = DriverManager.getConnection(URI);
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
 
             try (ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE id=" + id + ";")) {
@@ -33,7 +38,7 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public User getByName(String name) {
-        try (Connection connection = DriverManager.getConnection(URI);
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
 
             try (ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE userName='" + name + "';")) {

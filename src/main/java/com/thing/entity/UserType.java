@@ -2,7 +2,7 @@ package com.thing.entity;
 
 public enum UserType {
     ADMIN("admin"),
-    CUSTOMER("customer");
+    GUEST("guest");
 
     private String name;
 

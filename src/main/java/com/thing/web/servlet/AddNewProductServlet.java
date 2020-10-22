@@ -23,6 +23,8 @@ public class AddNewProductServlet extends HttpServlet {
         PageGenerator pageGenerator = PageGenerator.instance();
         String page = pageGenerator.getPage("update.html", map);
 
+        resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().write(page);
 
     }
@@ -40,6 +42,8 @@ public class AddNewProductServlet extends HttpServlet {
 
         productService.addNewProduct(product);
 
+        resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
         resp.sendRedirect("/products");
     }
 

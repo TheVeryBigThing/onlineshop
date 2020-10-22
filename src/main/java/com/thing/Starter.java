@@ -10,20 +10,20 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.sqlite.SQLiteDataSource;
 
 import javax.servlet.DispatcherType;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 public class Starter {
     public static void main(String[] args) throws Exception {
-        JdbcProductDao productDao = new JdbcProductDao();
+        SQLiteDataSource dataSource = new SQLiteDataSource();
+        dataSource.setUrl("jdbc:sqlite:src\\main\\resources\\shop.db");
+
+        JdbcProductDao productDao = new JdbcProductDao(dataSource);
         DefaultProductService productService = new DefaultProductService(productDao);
 
-        JdbcUserDao userDao = new JdbcUserDao();
+        JdbcUserDao userDao = new JdbcUserDao(dataSource);
         SecurityService securityService = new SecurityService(userDao);
 
         GetAllProductsServlet getAllProductsServlet = new GetAllProductsServlet();

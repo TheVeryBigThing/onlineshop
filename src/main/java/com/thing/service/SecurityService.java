@@ -3,7 +3,10 @@ package com.thing.service;
 import com.thing.dao.UserDao;
 import com.thing.entity.User;
 import com.thing.entity.UserType;
+import org.apache.commons.codec.digest.DigestUtils;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +28,9 @@ public class SecurityService {
             throw new RuntimeException("Username " + login + " not found!");
         }
 
-        if (Objects.equals(user.getPassword(), password)) {
+        String passwordInHash = DigestUtils.md5Hex(password + user.getSole());
+
+        if (Objects.equals(user.getPassword(), passwordInHash)) {
 
             Session session = new Session();
             session.setUser(user);
@@ -42,7 +47,7 @@ public class SecurityService {
 
     public boolean containsCoockie(String token) {
         for (Session session : sessions) {
-            if (token.equals(session.getToken()) && session.getExpireTime().isAfter(LocalDateTime.now())) {
+            if (Objects.equals(token, session.getToken()) && session.getExpireTime().isAfter(LocalDateTime.now())) {
                 return true;
             }
         }

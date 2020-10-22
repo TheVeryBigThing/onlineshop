@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
@@ -37,11 +38,17 @@ public class LoginServlet extends HttpServlet {
             Session session = securityService.auth(login, password);
 
             Cookie cookie = new Cookie("user-token", session.getToken());
-            cookie.setMaxAge((int) session.getExpireTime().toEpochSecond(ZoneOffset.UTC));
+            long timeNowInSeconds = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+            long expireTimeInSeconds = session.getExpireTime().toEpochSecond(ZoneOffset.UTC);
+
+            int activeTimeInSeconds = (int) (expireTimeInSeconds - timeNowInSeconds);
+
+            cookie.setMaxAge(activeTimeInSeconds);
             resp.addCookie(cookie);
             resp.sendRedirect("/products");
         } catch (Exception e) {
             e.printStackTrace();
+            resp.setContentType("text/html;charset=utf-8");
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 

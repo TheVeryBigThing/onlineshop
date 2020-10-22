@@ -5,6 +5,7 @@ public class User {
     private String userName;
     private String password;
     private UserType userType;
+    private String sole;
 
     public int getId() {
         return id;
@@ -36,6 +37,14 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public String getSole() {
+        return sole;
+    }
+
+    public void setSole(String sole) {
+        this.sole = sole;
     }
 
     @Override

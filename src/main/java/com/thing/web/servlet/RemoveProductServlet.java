@@ -16,6 +16,8 @@ public class RemoveProductServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         productService.removeProduct(id);
 
+        resp.setContentType("text/html;charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
         resp.sendRedirect("/products");
     }
 
