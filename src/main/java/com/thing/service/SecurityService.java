@@ -5,8 +5,6 @@ import com.thing.entity.User;
 import com.thing.entity.UserType;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +15,8 @@ public class SecurityService {
     private UserDao userDao;
     private List<Session> sessions;
 
-    public SecurityService(UserDao userDao) {
+    public SecurityService() {
         sessions = new ArrayList<>();
-        this.userDao = userDao;
     }
 
     public Session auth(String login, String password) {
@@ -61,5 +58,9 @@ public class SecurityService {
             }
         }
         return false;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

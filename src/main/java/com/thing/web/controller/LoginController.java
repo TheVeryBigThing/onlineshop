@@ -1,38 +1,42 @@
-package com.thing.web.servlet;
+package com.thing.web.controller;
 
 import com.thing.service.SecurityService;
 import com.thing.service.Session;
 import com.thing.web.templater.PageGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-public class LoginServlet extends HttpServlet {
+@Controller
+public class LoginController {
+    @Autowired
     private SecurityService securityService;
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @RequestMapping(method = RequestMethod.GET, path = "/login")
+    public void showLoginForm(HttpServletResponse response) throws IOException {
         Map<String, Object> map = new HashMap<>();
         PageGenerator pageGenerator = PageGenerator.instance();
         String page = pageGenerator.getPage("login.html", map);
 
-        resp.getWriter().write(page);
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(page);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String login = req.getParameter("login");
-        String password = req.getParameter("password");
+    @RequestMapping(method = RequestMethod.POST, path = "/login")
+    public void login(HttpServletResponse response, HttpServletRequest request){
+        String login = request.getParameter("login");
+        String password = request.getParameter("password");
 
         try {
             Session session = securityService.auth(login, password);
@@ -44,14 +48,13 @@ public class LoginServlet extends HttpServlet {
             int activeTimeInSeconds = (int) (expireTimeInSeconds - timeNowInSeconds);
 
             cookie.setMaxAge(activeTimeInSeconds);
-            resp.addCookie(cookie);
-            resp.sendRedirect("/products");
+            response.addCookie(cookie);
+            response.sendRedirect("/products");
         } catch (Exception e) {
             e.printStackTrace();
-            resp.setContentType("text/html;charset=utf-8");
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("text/html;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-
     }
 
     public void setSecurityService(SecurityService securityService) {

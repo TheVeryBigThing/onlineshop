@@ -3,21 +3,16 @@ package com.thing.dao.jdbc;
 import com.thing.dao.UserDao;
 import com.thing.dao.mapper.UserRowMapper;
 import com.thing.entity.User;
+import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
 import java.sql.*;
 
 public class JdbcUserDao implements UserDao {
-    private DataSource dataSource;
-
-    public JdbcUserDao(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
     @Override
     public User getById(int id) {
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
 
             try (ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE id=" + id + ";")) {
@@ -38,7 +33,7 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public User getByName(String name) {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
 
             try (ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE userName='" + name + "';")) {
@@ -57,5 +52,11 @@ public class JdbcUserDao implements UserDao {
             e.printStackTrace();
             throw new RuntimeException("Get user failed", e);
         }
+    }
+
+    private Connection getConnection() throws SQLException {
+        SQLiteDataSource dataSource = new SQLiteDataSource();
+        dataSource.setUrl("jdbc:sqlite:src\\main\\resources\\shop.db");
+        return dataSource.getConnection();
     }
 }
